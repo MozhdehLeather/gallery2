@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Delivery | Priceless Capture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --paper: #fefefe;
+            --ink: #1a1a1a;
+            --border: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --accent: #1a1a1a;
+            --light-bg: #f8f8f8;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            flex: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .logo {
+            font-size: 32px;
+            margin-bottom: 16px;
+            color: var(--ink);
+        }
+
+        .brand {
+            margin-bottom: 24px;
+        }
+
+        .brand-name {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: #999;
+            letter-spacing: 1px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        .upload-section {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px var(--shadow);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .form-group {
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--paper);
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--ink);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-input-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 60px 32px;
+            text-align: center;
+            background: var(--light-bg);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .file-input-area:hover {
+            border-color: var(--ink);
+            background: var(--paper);
+        }
+
+        .file-input-area.dragover {
+            border-color: var(--ink);
+            background: var(--light-bg);
+        }
+
+        .file-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .file-input-area h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--ink);
+        }
+
+        .file-input-area p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-info {
+            background: var(--light-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #666;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .image-previews {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--paper);
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .preview-card:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        .remove-btn {
+            background: var(--paper);
+            color: var(--ink);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .upload-btn:hover {
+            background: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--ink);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: none;
+            border: 1px solid;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            border-color: #fed7d7;
+            color: #c53030;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+            color: #2d7d32;
+        }
+
+        .result-section {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin-top: 32px;
+            box-shadow: 0 2px 8px var(--shadow);
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-icon {
+            font-size: 24px;
+            color: var(--ink);
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .result-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .result-label {
+            min-width: 120px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .result-value {
+            flex: 1;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+        }
+
+        .link-box {
+            background: var(--paper);
+            padding: 12px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .link-box:hover {
+            background: var(--light-bg);
+        }
+
+        .qr-section {
+            text-align: center;
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 24px 0;
+            background: var(--light-bg);
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .qr-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .qr-image {
+            max-width: 200px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .action-btn {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--paper);
+            color: var(--ink);
+            text-decoration: none;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .action-btn:hover {
+            background: var(--ink);
+            color: var(--paper);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .action-btn.primary {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        .action-btn.primary:hover {
+            background: #333;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--light-bg);
+            border-top: 1px solid var(--border);
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .company-info {
+            margin-bottom: 24px;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .company-tagline {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .website-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .website-link:hover {
+            background: var(--ink);
+            color: var(--paper);
+            transform: translateY(-1px);
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: #999;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .upload-section {
+                padding: 24px;
+            }
+
+            .result-section {
+                padding: 24px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .image-previews {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="brand">
+                <div class="brand-name">Priceless Capture</div>
+                <div class="brand-subtitle">Professional Photo Delivery</div>
+            </div>
+            <div class="logo">
+                <i class="fas fa-camera"></i>
+            </div>
+            <h1>Client Photo Delivery</h1>
+            <p>Upload and share photos with your clients</p>
+        </div>
+
+        <div class="upload-section">
+            <div id="alert" class="alert"></div>
+
+            <div class="form-group">
+                <label for="customerName">
+                    <i class="fas fa-user" style="margin-right: 8px;"></i>
+                    Client Name
+                </label>
+                <input type="text" id="customerName" placeholder="Enter client name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="photos">
+                    <i class="fas fa-images" style="margin-right: 8px;"></i>
+                    Select Photos
+                </label>
+                <div class="file-input-area" id="dropZone">
+                    <div class="file-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Upload Photos</h3>
+                    <p>Drag & drop images here or click to browse</p>
+                    <p>Supports JPG, PNG, GIF, WebP • Max 50MB per file</p>
+                    <input type="file" id="photos" multiple accept="image/*" class="file-input">
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                    <span id="fileCount">0</span> files selected • <span id="totalSize">0 MB</span>
+                </div>
+                
+                <div class="image-previews" id="imagePreviews"></div>
+            </div>
+
+            <button id="uploadBtn" class="upload-btn">
+                <i class="fas fa-upload"></i>
+                Create Photo Album
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Creating album and generating download links...</p>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-header">
+                <i class="fas fa-check-circle result-icon"></i>
+                <div class="result-title">Album Created Successfully</div>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <div class="result-label">Client</div>
+                    <div class="result-value" id="resultCustomer"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Album ID</div>
+                    <div class="result-value" id="albumId"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Photos</div>
+                    <div class="result-value" id="photoCount"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Share Link</div>
+                    <div class="link-box" id="albumLink" onclick="copyToClipboard(this)">
+                        <i class="fas fa-link" style="margin-right: 8px;"></i>
+                        <span>Copy to clipboard</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <div class="qr-title">QR Code</div>
+                <img id="qrImage" src="" alt="QR Code" class="qr-image">
+            </div>
+
+            <div class="action-buttons">
+                <a id="viewLink" class="action-btn primary" href="#" target="_blank">
+                    <i class="fas fa-eye"></i>
+                    View Gallery
+                </a>
+                <a id="downloadLink" class="action-btn" href="#">
+                    <i class="fas fa-download"></i>
+                    Download ZIP
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="company-info">
+                <div class="company-name">Priceless Capture</div>
+                <div class="company-tagline">Capturing moments that last forever</div>
+                <a href="https://pricelesscapture.com" class="website-link" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    Visit our website
+                </a>
+            </div>
+            <div class="copyright">
+                &copy; 2024 Priceless Capture. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize GSAP animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Main timeline
+            const tl = gsap.timeline();
+            
+            // Header animation
+            tl.to('.header', {
+                duration: 0.8,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            })
+            // Upload section animation
+            .to('.upload-section', {
+                duration: 0.6,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            }, "-=0.4")
+            // Form groups animation
+            .to('.form-group', {
+                duration: 0.5,
+                opacity: 1,
+                y: 0,
+                stagger: 0.1,
+                ease: "power2.out"
+            }, "-=0.3")
+            // File input area animation
+            .to('.file-input-area', {
+                duration: 0.6,
+                opacity: 1,
+                scale: 1,
+                ease: "back.out(1.7)"
+            }, "-=0.2")
+            // Upload button animation
+            .to('.upload-btn', {
+                duration: 0.5,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            }, "-=0.2");
+
+            // Footer animation
+            gsap.to('.footer', {
+                duration: 0.8,
+                opacity: 1,
+                y: 0,
+                delay: 1,
+                ease: "power2.out"
+            });
+        });
+
+        // Animation for showing results
+        function animateResults() {
+            const tl = gsap.timeline();
+            
+            tl.to('.result-section', {
+                duration: 0.6,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            })
+            .to('.result-item', {
+                duration: 0.4,
+                opacity: 1,
+                x: 0,
+                stagger: 0.1,
+                ease: "power2.out"
+            }, "-=0.3")
+            .to('.qr-section', {
+                duration: 0.5,
+                opacity: 1,
+                scale: 1,
+                ease: "back.out(1.7)"
+            }, "-=0.2")
+            .to('.action-btn', {
+                duration: 0.4,
+                opacity: 1,
+                y: 0,
+                stagger: 0.1,
+                ease: "power2.out"
+            }, "-=0.2");
+        }
+
+        // Animation for file info
+        function animateFileInfo() {
+            gsap.to('.file-info', {
+                duration: 0.4,
+                opacity: 1,
+                y: 0,
+                ease: "power2.out"
+            });
+        }
+
+        // Animation for preview cards
+        function animatePreviewCards() {
+            gsap.to('.preview-card', {
+                duration: 0.3,
+                opacity: 1,
+                scale: 1,
+                stagger: 0.05,
+                ease: "back.out(1.7)"
+            });
+        }
+
+        // Animation for alerts
+        function animateAlert(type) {
+            const alert = document.getElementById('alert');
+            if (type === 'show') {
+                gsap.to(alert, {
+                    duration: 0.4,
+                    opacity: 1,
+                    y: 0,
+                    ease: "power2.out"
+                });
+            } else {
+                gsap.to(alert, {
+                    duration: 0.3,
+                    opacity: 0,
+                    y: -10,
+                    ease: "power2.in"
+                });
+            }
+        }
+
+        let selectedFiles = [];
+        
+        document.getElementById('uploadBtn').addEventListener('click', uploadPhotos);
+        document.getElementById('photos').addEventListener('change', handleFileSelect);
+        setupDragAndDrop();
+
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('dropZone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropZone.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('dragover');
+            }
+            
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+        }
+
+        function handleFileSelect(e) {
+            handleFiles(e.target.files);
+        }
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            updateFileInfo();
+            generatePreviews();
+        }
+
+        function updateFileInfo() {
+            const fileInfo = document.getElementById('fileInfo');
+            const fileCount = document.getElementById('fileCount');
+            const totalSize = document.getElementById('totalSize');
+            
+            if (selectedFiles.length > 0) {
+                const totalSizeBytes = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+                const totalSizeMB = (totalSizeBytes / (1024 * 1024)).toFixed(2);
+                
+                fileCount.textContent = selectedFiles.length;
+                totalSize.textContent = totalSizeMB;
+                fileInfo.style.display = 'block';
+                animateFileInfo();
+                
+                document.getElementById('uploadBtn').disabled = false;
+            } else {
+                fileInfo.style.display = 'none';
+                document.getElementById('uploadBtn').disabled = true;
+            }
+        }
+
+        function generatePreviews() {
+            const previewsContainer = document.getElementById('imagePreviews');
+            previewsContainer.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const previewCard = document.createElement('div');
+                    previewCard.className = 'preview-card';
+                    previewCard.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="preview-img">
+                        <div class="preview-overlay">
+                            <button class="remove-btn" onclick="removeImage(${index})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    previewsContainer.appendChild(previewCard);
+                };
+                
+                reader.readAsDataURL(file);
+            });
+
+            // Animate preview cards after a short delay
+            setTimeout(animatePreviewCards, 100);
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            updateFileInfo();
+            generatePreviews();
+            
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            document.getElementById('photos').files = dataTransfer.files;
+        }
+
+        async function uploadPhotos() {
+            const customerName = document.getElementById('customerName').value.trim();
+            
+            if (!customerName) {
+                showAlert('Please enter client name', 'error');
+                return;
+            }
+
+            if (selectedFiles.length === 0) {
+                showAlert('Please select at least one photo', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('customerName', customerName);
+            selectedFiles.forEach(file => {
+                formData.append('photos', file);
+            });
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('uploadBtn').disabled = true;
+            hideAlert();
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showResult(result);
+                    showAlert('Album created successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        function showResult(data) {
+            document.getElementById('resultCustomer').textContent = data.customerName;
+            document.getElementById('albumId').textContent = data.albumId;
+            document.getElementById('albumLink').innerHTML = '<i class="fas fa-link" style="margin-right: 8px;"></i><span>' + data.link + '</span>';
+            document.getElementById('photoCount').textContent = data.photoCount + ' photos';
+            document.getElementById('qrImage').src = data.qrUrl;
+            document.getElementById('viewLink').href = data.link;
+            document.getElementById('downloadLink').href = data.zipUrl;
+            
+            document.getElementById('resultSection').style.display = 'block';
+            animateResults();
+            
+            // Scroll to results with smooth animation
+            gsap.to(window, {
+                duration: 1,
+                scrollTo: { y: '#resultSection', offsetY: 50 },
+                ease: "power2.inOut"
+            });
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            animateAlert('show');
+        }
+
+        function hideAlert() {
+            animateAlert('hide');
+            setTimeout(() => {
+                document.getElementById('alert').style.display = 'none';
+            }, 300);
+        }
+
+        function copyToClipboard(element) {
+            const text = element.querySelector('span').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = element.innerHTML;
+                element.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i><span>Copied!</span>';
+                element.style.background = 'var(--light-bg)';
+                
+                // Animate the copy feedback
+                gsap.to(element, {
+                    duration: 0.2,
+                    scale: 1.05,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: "power2.inOut"
+                });
+                
+                setTimeout(() => {
+                    element.innerHTML = originalHTML;
+                    element.style.background = 'var(--paper)';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
