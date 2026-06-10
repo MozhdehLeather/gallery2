@@ -31,9 +31,10 @@ const storage = multer.diskStorage({
     }
 });
 
+// UPDATED: File size limit changed to 5GB (5 * 1024 * 1024 * 1024 bytes)
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 }
+    limits: { fileSize: 5 * 1024 * 1024 * 1024 }  // 5GB per file
 });
 
 // 3. FIX: Inject 'attachAlbumId' right BEFORE the upload array parser
@@ -111,4 +112,3 @@ function createZipArchive(albumDir, photos, zipPath) {
     });
 }
 
-module.exports = router;
